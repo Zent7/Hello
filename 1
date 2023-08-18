@@ -1,209 +1,103 @@
-```
-
 package main
-
-
-
 import (
-
  "fmt"
-
  "regexp"
-
  "strconv"
-
  "strings"
-
 )
 
-
-
 var romanNumerals = map[string]int{"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5, "VI": 6, "VII": 7, "VIII": 8, "IX": 9, "X": 10}
-
 var arabicToRoman = map[int]string{1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII", 9: "IX", 10: "X"}
 
-
-
 func main() {
-
  fmt.Println("Enter your calculation:")
-
  input := ""
-
  fmt.Scanln(&input)
-
  processInput(input)
-
 }
 
-
-
 func processInput(input string) {
-
  pattern := regexp.MustCompile(`^(\w+)\s*([+\-*/])\s*(\w+)$`)
-
  matches := pattern.FindStringSubmatch(input)
-
  if len(matches) != 4 {
-
   fmt.Println("Вывод ошибки, так как строка не является математической операцией.")
-
   return
-
  }
-
-
 
  operand1, operator, operand2 := matches[1], matches[2], matches[3]
 
-
-
  value1, value2, isRoman := parseOperands(operand1, operand2)
-
  if value1 == 0 || value2 == 0 {
-
   return
-
  }
-
-
 
  result := performCalculation(value1, operator, value2)
 
-
-
  if isRoman {
-
   if result < 1 {
-
    fmt.Println("Вывод ошибки, так как в римской системе нет отрицательных чисел.")
-
    return
-
   }
-
   fmt.Println(toRoman(result))
-
  } else {
-
   fmt.Println(result)
-
  }
-
 }
-
-
 
 func parseOperands(op1, op2 string) (int, int, bool) {
-
  value1, isRoman1 := toArabic(op1)
-
  value2, isRoman2 := toArabic(op2)
 
-
-
  if isRoman1 != isRoman2 {
-
   fmt.Println("Вывод ошибки, так как используются одновременно разные системы счисления.")
-
   return 0, 0, false
-
  }
-
-
 
  if (value1 < 1 || value1 > 10) || (value2 < 1 || value2 > 10) {
-
   fmt.Println("Вывод ошибки, так как введенные числа не входят в допустимый диапазон.")
-
   return 0, 0, false
-
  }
-
-
 
  return value1, value2, isRoman1
-
 }
-
-
 
 func toArabic(op string) (int, bool) {
-
  if value, ok := romanNumerals[op]; ok {
-
   return value, true
-
  }
-
  value, err := strconv.Atoi(op)
-
  if err != nil {
-
   return 0, false
-
  }
-
  return value, false
-
 }
-
-
 
 func toRoman(value int) string {
-
  roman := ""
-
  for value > 0 {
-
   for arabic, romanNumeral := range arabicToRoman {
-
    if arabic <= value {
-
     roman = romanNumeral
-
    }
-
   }
-
   value -= romanNumerals[roman]
-
   roman += roman
-
  }
-
  return strings.TrimPrefix(roman, "I")
-
 }
-
-
 
 func performCalculation(value1 int, operator string, value2 int) int {
-
  switch operator {
-
  case "+":
-
   return value1 + value2
-
  case "-":
-
   return value1 - value2
-
  case "*":
-
   return value1 * value2
-
  case "/":
-
   return value1 / value2
-
  default:
-
   return 0
-
  }
-
 }
 
-```
